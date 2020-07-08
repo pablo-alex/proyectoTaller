@@ -4,7 +4,7 @@
   "description": "app para mi proyecto de taller de redes, mysql junto con reconocimiento de imagenes",
   "main": "index.js",
   "scripts": {
-    "start": "node /src/app.js"
+    "start": "node ./src/app.js"
   },
   "keywords": [
     "mysql",
