@@ -2,7 +2,7 @@
   "name": "app_proyecto",
   "version": "1.0.0",
   "description": "app para mi proyecto de taller de redes, mysql junto con reconocimiento de imagenes",
-  "main": "src/app.js",
+  "main": "index.js",
   "scripts": {
     "start": "node /src/app.js"
   },
