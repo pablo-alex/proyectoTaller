@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/public/favicon.ico" type="image/x-icon" />
+    <title>Inicio - Proyecto Taller Redes</title>
+    <!--CARGANDO BOOTSTRAP-->
+    <link rel="stylesheet" href="/public/bootstrap.min.css">|
+    <script type="text/javascript" src="../public/webcam-easy.min.js"></script>
+    <script src="../public/jquery-2.1.1.min.js"></script>
+    <script src="../public/face-api.js"></script>
+
+</head>
+
+<body>
+    <nav>
+        <nav class="navbar navbar-dark bg-dark">
+            <a href="/" class="navbar-brand">Lista de Usuarios</a>
+            <a href="/newusers" class="navbar-brand">Nuevo Usuario</a>
+            <a href="/enters" class="navbar-brand">Lista Registros</a>
+            <a href="/newenters" class="navbar-brand">Nuevo Registro</a>
+        </nav>
+    </nav>
+
+    <!--BODY/////////////////////////////////////////////-->
+<div class="container">
+    <div class="row mt-5">
+
+        <div class="col-md-7">
+            <div class="form-camara">
+                <button id="take" class="btn btn-primary" type="button">Tomar Foto</button>
+            </div>
+            <div class="form-camara">
+                <video id="webcam" autoplay playsinline width="400" height="300"></video>
+                <canvas id="canvas" class="d-none"></canvas>
+            </div>
+            <audio id="snapSound" src="../public/snap.wav" preload = "auto"></audio>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-body">
+                    <form action="/addUser" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <input type="number" name="id" placeholder="ID" class="form-control" id="idForm">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="name" placeholder="Nombre" class="form-control" id="nameForm">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="address" placeholder="Direccion" class="form-control" id="addressForm">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" name="phone" placeholder="Telefono" class="form-control" id="phoneForm">
+                        </div>                       
+                        <button type="button" id="boton" class="btn btn-danger">
+                            Guardar Usuario
+                        </button>
+                    </form>
+                </div>
+            </div>    
+        </div>
+
+    </div>
+</div>
+
+</body> 
+<script>
+function isNumeric(value) {
+    return /^\d+$/.test(value);
+}
+
+function checkDatos(){
+    if (!isNumeric(idForm.value)){
+        alert("Por favor introduzca un numero entero en el ID");
+        idForm.value = '';
+        return false;
+    }
+    if (!isNumeric(phoneForm.value)){
+        alert("Por favor introduzca un numero entero en el Teléfono");
+        phoneForm.value = '';
+        return false;
+    }
+    if (!addressForm.value){
+        alert("Por favor la Direccion debe contener algun dato");
+        return false;
+    }
+    if (!nameForm.value){
+        alert("Por favor el Nombre debe contener algun dato");
+        return false;
+    }
+    return true;
+}
+
+$(document).ready(function(){
+    //botones camara y envio de formulario
+    const take = document.getElementById("take");
+    const boton = document.getElementById("boton");
+    //recuperar informacion del formulario
+    const idForm = document.getElementById("idForm");
+    const nameForm = document.getElementById("nameForm");
+    const addressForm = document.getElementById("addressForm");
+    const phoneForm = document.getElementById("phoneForm");
+    
+
+    boton.style.display = 'none';
+    let imagePersona = new Image;
+    Promise.all([
+    faceapi.loadSsdMobilenetv1Model("/modelsML"),
+    faceapi.loadFaceLandmarkModel("/modelsML")
+    ]).then(()=> {
+        console.log('Se han cargado los modelos!!');
+        webcam.start()
+            .then(result =>{
+                console.log("webcam started");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    });
+
+    const webcamElement = document.getElementById('webcam');
+    const canvasElement = document.getElementById('canvas');
+    const snapSoundElement = document.getElementById('snapSound');
+    const webcam = new Webcam(webcamElement, 'user', canvasElement, snapSoundElement);
+
+    take.addEventListener("click", async()=>{
+        imagePersona.src = await webcam.snap();
+
+        const fullFaceDescription = await faceapi.detectSingleFace(imagePersona).withFaceLandmarks();                    
+        if (!fullFaceDescription) {
+            alert("Rostro no reconocido, por favor intente de nuevo");
+        }else{
+            console.log('Se encontro un rostro en la foto!');
+            boton.style.display = null;
+        }
+    });
+
+    boton.addEventListener("click", async()=>{
+        if (checkDatos){
+            const id = idForm.value;
+            const name = nameForm.value;
+            const address = addressForm.value;
+            const phone = phoneForm.value;
+            const image = imagePersona.src;
+
+            const data = {
+                id,
+                name,
+                address,
+                phone,
+                image
+            };
+
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+            const response = await fetch('/addUser', options);
+            const respuesta = await response.json();
+            console.log(respuesta);
+            idForm.value = '';
+            nameForm.value = '';
+            addressForm.value = '';
+            phoneForm.value = '',
+            alert("Los datos del nuevo usuario se han registrado correctamente!")
+            
+        }
+        
+        
+
+
+    });
+
+});
+</script>
+</html>

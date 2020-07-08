@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/public/favicon.ico" type="image/x-icon" />
+    <title>Inicio - Proyecto Taller Redes</title>
+    <!--CARGANDO BOOTSTRAP-->
+    <link rel="stylesheet" href="/public/bootstrap.min.css">|
+
+
+</head>
+
+<body>
+    <nav>
+        <nav class="navbar navbar-dark bg-dark">
+            <a href="/" class="navbar-brand">Lista de Usuarios</a>
+            <a href="/newusers" class="navbar-brand">Nuevo Usuario</a>
+            <a href="/enters" class="navbar-brand">Lista Registros</a>
+            <a href="/newenters" class="navbar-brand">Nuevo Registro</a>
+        </nav>
+    </nav>
+
+    <!--BODY/////////////////////////////////////////////-->
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-md-7">
+            <table class="table table-bordered table-hoover">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Direccion</th>
+                    <th>Telefono</th>
+                    <th>Acccion</th>
+                </tr>
+                </thead>
+                
+                <tbody>
+                    <% if (data) { %>
+                        <% for (let i = 0; i < data.length; i=i+1) { %>
+                            <tr>
+                                <td> <%= data[i].id %> </td>
+                                <td> <%= data[i].name %> </td>
+                                <td> <%= data[i].address %> </td>
+                                <td> <%= data[i].phone %> </td>
+                                <td>
+                                    <a href="/delete/<%= data[i].id %>" class="btn btn-danger">Eliminar</a>
+                                </td>
+                            </tr>
+                        <% } %>
+                    <% } %>
+                </tbody>
+            
+
+
+
+        </div>
+    </div>
+</div>
+
+</body> 
+</html>

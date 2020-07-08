@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/public/favicon.ico" type="image/x-icon" />
+    <title>Inicio - Proyecto Taller Redes</title>
+    <!--CARGANDO BOOTSTRAP-->
+    <link rel="stylesheet" href="/public/bootstrap.min.css">|
+    <script type="text/javascript" src="../public/webcam-easy.min.js"></script>
+    <script src="../public/jquery-2.1.1.min.js"></script>
+    <script src="../public/face-api.js"></script>
+
+</head>
+
+<body>
+    <nav>
+        <nav class="navbar navbar-dark bg-dark">
+            <a href="/" class="navbar-brand">Lista de Usuarios</a>
+            <a href="/newusers" class="navbar-brand">Nuevo Usuario</a>
+            <a href="/enters" class="navbar-brand">Lista Registros</a>
+            <a href="/newenters" class="navbar-brand">Nuevo Registro</a>
+        </nav>
+    </nav>
+
+    <!--BODY/////////////////////////////////////////////-->
+<div class="container">
+    <div class="row mt-5">
+
+        <div class="col-md-7">
+
+            <div class="form-camara">
+                <button id="take" class="btn btn-primary" type="button">Tomar Foto</button>
+            </div>
+            <div class="form-camara">
+                <video id="webcam" autoplay playsinline width="400" height="300"></video>
+                <canvas id="canvas" class="d-none"></canvas>
+            </div>
+            <audio id="snapSound" src="../public/snap.wav" preload = "auto"></audio>
+
+        </div>
+
+    </div>
+</div>
+
+</body> 
+<script>
+$(document).ready(function(){
+const webcamElement = document.getElementById('webcam');
+const canvasElement = document.getElementById('canvas');
+const snapSoundElement = document.getElementById('snapSound');
+const webcam = new Webcam(webcamElement, 'user', canvasElement, snapSoundElement);
+
+const take = document.getElementById("take");
+
+let imagePersona = new Image();
+let labelfulldes;
+let vectorDatos;
+let nameAceptado;
+
+Promise.all([
+    faceapi.loadSsdMobilenetv1Model("/modelsML"),
+    faceapi.loadFaceLandmarkModel("/modelsML"),
+    faceapi.loadFaceRecognitionModel("/modelsML")
+    ]).then(async()=>{
+
+        //Mandamos una peticion para recibir los datos de los usuarios como sus imagenes
+        const data = { action: 'Pidiendo datos imagenes' };
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        };
+
+        const response = await fetch('/obteinData', options);
+        const respuesta = await response.json();
+        vectorDatos = respuesta;
+        console.log(respuesta);
+
+        const labeledFaceDescriptors = await Promise.all(
+            respuesta.map(async label => {
+                console.log(label);
+                
+                const imgUrl = label.image;
+                const img = await faceapi.fetchImage(imgUrl);
+
+                const fullFaceDescription = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
+                
+                if (!fullFaceDescription) {
+                throw new Error("No se encontro rostro para " + label.name);
+                };
+                
+                const faceDescriptors = [fullFaceDescription.descriptor];
+
+                return new faceapi.LabeledFaceDescriptors(label.id.toString(), faceDescriptors);
+            })
+        );
+
+        //guardamos este vector para despues
+        labelfulldes = labeledFaceDescriptors;
+
+        console.log('Se han cargado los modelos!!!');
+        await webcam.start()
+            .then(result =>{
+                console.log("webcam started");
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    });
+
+take.addEventListener("click", async()=>{
+    let picture = await webcam.snap();
+    imagePersona.src = picture;
+
+    const fullFaceDescription = await faceapi.detectSingleFace(imagePersona).withFaceLandmarks().withFaceDescriptor();
+    console.log(fullFaceDescription)          
+    if (!fullFaceDescription) {
+        alert('Por favor intente con otra foto!!');
+    }else{
+        console.log('Se encontro un rostro en la foto!');
+        const maxDescriptorDistance = 0.6;
+        const faceMatcher = await new faceapi.FaceMatcher(labelfulldes, maxDescriptorDistance);
+
+        const result =  await faceMatcher.findBestMatch(fullFaceDescription.descriptor);
+        console.log(result);
+
+        //AQUI PONER UN IF DE UNNOWN------
+        let i=0;
+        console.log(vectorDatos.length);
+        while (i<vectorDatos.length){
+            if (vectorDatos[i].id == result.label){
+                nameAceptado = vectorDatos[i].name;
+                console.log(vectorDatos[i].name);
+                i=vectorDatos.length;
+            }
+            i = i+1;
+        }
+
+        const persona_id = result.label;
+        const data = { persona_id };
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        };
+
+        const response = await fetch('/addEnter', options);
+        const respuesta = await response.json();
+        console.log(respuesta);
+
+        alert("Nueva Entrada Registrada Correctamente!! Bienvenido " + nameAceptado);
+    }
+
+    speechSynthesis.speak(new SpeechSynthesisUtterance('Bienvenido '+ nameAceptado));
+});
+
+})
+</script>
+</html>

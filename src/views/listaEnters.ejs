@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/public/favicon.ico" type="image/x-icon" />
+    <title>Inicio - Proyecto Taller Redes</title>
+    <!--CARGANDO BOOTSTRAP-->
+    <link rel="stylesheet" href="/public/bootstrap.min.css">|
+</head>
+
+<body>
+    <nav>
+        <nav class="navbar navbar-dark bg-dark">
+            <a href="/" class="navbar-brand">Lista de Usuarios</a>
+            <a href="/newusers" class="navbar-brand">Nuevo Usuario</a>
+            <a href="/enters" class="navbar-brand">Lista Registros</a>
+            <a href="/newenters" class="navbar-brand">Nuevo Registro</a>
+        </nav>
+    </nav>
+
+    <!--BODY/////////////////////////////////////////////-->
+<div class="container">
+    <div class="row mt-5">
+
+        <div class="col-md-7">
+            <table class="table table-bordered table-hoover">
+            <thead>
+                <tr>
+                <th>N°</th>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Dia</th>
+                <th>Hora</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <% console.log('Hay un total de ' + enters.length + ' de Registros') %>
+                <% console.log('Hay un total de ' + users.length + ' de Usuarios') %>
+
+                <% if (enters) { %>
+                    <% for (let i = 0; i < enters.length; i=i+1) { %>
+                        <tr>
+                            <td> <%= (i+1) %> </td>
+                            <td> <%= enters[i].persona_id %> </td>
+
+                            <% var a=0; %>
+                            <% while(a <= users.length){ %>
+                                <% if (users[a].id == enters[i].persona_id) { %>
+                                    <td> <%= users[a].name %> </td>
+                                    <% a = users.length; %>
+                                <% } %>
+                            <% a = a +1; %>
+                            <% } %>
+
+                            <td> <%= moment(enters[i].myDate).format('LL'); %> </td>
+                            <td> <%= moment(enters[i].myDate).format('LTS'); %> </td>
+
+                        </tr>
+                    <% } %>
+                <% } %>
+
+            </tbody>
+            </table> 
+        </div>
+
+    </div>
+</div>
+
+</body> 
+</html>
