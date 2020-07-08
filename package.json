@@ -4,7 +4,7 @@
   "description": "app para mi proyecto de taller de redes, mysql junto con reconocimiento de imagenes",
   "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node /src/app.js"
   },
   "keywords": [
     "mysql",
