@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="/public/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/public/favicon.ico" type="image/x-icon"/>
+    <style>
+        #take {
+            width: 75%;
+        }
+    </style>
     <title>Inicio - Proyecto Taller Redes</title>
     <!--CARGANDO BOOTSTRAP-->
     <link rel="stylesheet" href="/public/bootstrap.min.css">|
@@ -24,6 +29,18 @@
     </nav>
 
     <!--BODY/////////////////////////////////////////////-->
+    <div class="instruccion">
+        <p>
+            Intrucciones<br>
+            1. Espere que la camara se habilite, puede tardar varios segundos<br>
+            2. Pulse "Tomar Foto" (Solo si ya ha registrado antes todos sus datos en la pagina "Nuevo Usuario")<br>
+            3. Si su rostro es reconocido por el sistema, se guardara la hora actual exacta en una 
+            base de datos<br>
+            4. Recibira un aviso confirmando que los datos fueron guardados exitosamente. ( En "Lista Registros" puede
+            confirmar eso)<br>
+        </p>
+    </div>
+
 <div class="container">
     <div class="row mt-5">
 
@@ -33,7 +50,7 @@
                 <button id="take" class="btn btn-primary" type="button">Tomar Foto</button>
             </div>
             <div class="form-camara">
-                <video id="webcam" autoplay playsinline width="400" height="300"></video>
+                <video id="webcam" autoplay playsinline width="397" height="300"></video>
                 <canvas id="canvas" class="d-none"></canvas>
             </div>
             <audio id="snapSound" src="../public/snap.wav" preload = "auto"></audio>
@@ -56,7 +73,7 @@ const take = document.getElementById("take");
 let imagePersona = new Image();
 let labelfulldes;
 let vectorDatos;
-let nameAceptado;
+let nameAceptado = "";
 
 Promise.all([
     faceapi.loadSsdMobilenetv1Model("/modelsML"),
@@ -128,7 +145,8 @@ take.addEventListener("click", async()=>{
         console.log(result);
 
         //AQUI PONER UN IF DE UNNOWN------
-        let i=0;
+        if (!result.label == "unknown"){
+            let i=0;
         console.log(vectorDatos.length);
         while (i<vectorDatos.length){
             if (vectorDatos[i].id == result.label){
@@ -154,9 +172,16 @@ take.addEventListener("click", async()=>{
         console.log(respuesta);
 
         alert("Nueva Entrada Registrada Correctamente!! Bienvenido " + nameAceptado);
+        nameAceptado="";
+        }else{
+            alert("No se pudo reconocer al usuario dentro del sistema, por favor intente de nuevo");
+        }
+        
     }
-
-    speechSynthesis.speak(new SpeechSynthesisUtterance('Bienvenido '+ nameAceptado));
+    if (!nameAceptado==""){
+        speechSynthesis.speak(new SpeechSynthesisUtterance('Bienvenido '+ nameAceptado));
+    }
+    
 });
 
 })
