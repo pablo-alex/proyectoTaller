@@ -6,7 +6,7 @@
     <link rel="shortcut icon" href="/public/favicon.ico" type="image/x-icon" />
     <style>
         #take {
-            width: 75%;
+            width: 400px;
         }
 
         #boton {
@@ -35,14 +35,14 @@
     <!--BODY/////////////////////////////////////////////-->
     <div class="instruccion">
         <p> Intrucciones<br>
-            1. Espere que la camara se habilite (Si recibe un aviso por favor eliga "Permitir"<br>
+            1. Espere que la camara se habilite (Si se le pregunta si esta seguro de habilitar la camara, por favor eliga "Permitir"<br>
             2. Primero pulse el boton "Tomar Foto", necesitamos capturar una imagen del nuevo usuario que se agregara
-            al sistema. (Asegurese que su rostro se visible en la imagen)<br>
+            al sistema. (Asegurese que su rostro sea visible en la imagen)<br>
             3. Si en el anterior paso la imagen cumplio los requisitos, tendria que habilitarse un segundo
             boton de color rojo "Guardar Usuario"<br>
             4. Llene sus datos en el formulario, y pulse "Guardar Usuario"<br>
             5. Recibira un aviso, confirmando que los datos fueron guardados exitosamente, 
-            puede confirmar esto yendo a "Lista de Usuarios"<br>
+            puede asegurarse de esto yendo a "Lista de Usuarios"<br>
         </p>
     </div>
 
@@ -54,7 +54,7 @@
                 <button id="take" class="btn btn-primary" type="button">Tomar Foto</button>
             </div>
             <div class="form-camara">
-                <video id="webcam" autoplay playsinline width="397" height="300"></video>
+                <video id="webcam" autoplay playsinline width=400 height="300"></video>
                 <canvas id="canvas" class="d-none"></canvas>
             </div>
             <audio id="snapSound" src="../public/snap.wav" preload = "auto"></audio>
