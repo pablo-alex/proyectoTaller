@@ -94,11 +94,11 @@ Promise.all([
         const response = await fetch('/obteinData', options);
         const respuesta = await response.json();
         vectorDatos = respuesta;
-        console.log(respuesta);
+        //console.log(respuesta);
 
         const labeledFaceDescriptors = await Promise.all(
             respuesta.map(async label => {
-                console.log(label);
+                //console.log(label);
                 
                 const imgUrl = label.image;
                 const img = await faceapi.fetchImage(imgUrl);
@@ -115,7 +115,7 @@ Promise.all([
             })
         );
 
-        //guardamos este vector para despues
+        //guardamos para despes
         labelfulldes = labeledFaceDescriptors;
 
         console.log('Se han cargado los modelos!!!');
@@ -133,26 +133,27 @@ take.addEventListener("click", async()=>{
     imagePersona.src = picture;
 
     const fullFaceDescription = await faceapi.detectSingleFace(imagePersona).withFaceLandmarks().withFaceDescriptor();
-    console.log(fullFaceDescription)          
+    //console.log(fullFaceDescription)          
     if (!fullFaceDescription) {
         alert('Por favor intente con otra foto!!');
     }else{
-        console.log('Se encontro un rostro en la foto!');
+        console.log('Se detecto un rostro en la imagen!');
         const maxDescriptorDistance = 0.6;
         const faceMatcher = await new faceapi.FaceMatcher(labelfulldes, maxDescriptorDistance);
 
         const result =  await faceMatcher.findBestMatch(fullFaceDescription.descriptor);
-        console.log(result);
+        //console.log(result);
 
-        //AQUI PONER UN IF DE UNNOWN------
+
         console.log(result.label);
+        //nos aseguramos que el label sea valido
         if (result.label == "unknown"){
             alert("No se pudo reconocer al usuario dentro del sistema, por favor intente de nuevo");
 
             }else{
 
             let i=0;
-            console.log(vectorDatos.length);
+            //console.log(vectorDatos.length);
             while (i<vectorDatos.length){
                 if (vectorDatos[i].id == result.label){
                     nameAceptado = vectorDatos[i].name;
@@ -174,7 +175,7 @@ take.addEventListener("click", async()=>{
 
             const response = await fetch('/addEnter', options);
             const respuesta = await response.json();
-            console.log(respuesta);
+            //console.log(respuesta);
 
             alert("Nueva Entrada Registrada Correctamente!! Bienvenido " + nameAceptado);
 

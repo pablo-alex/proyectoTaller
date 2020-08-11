@@ -23,11 +23,10 @@ require('./models/sequalizeModel');
 
 // this makes moment available as a variable in every EJS page
 app.locals.moment = moment; 
-//usaremos otro middleware nos permitira tener el
-//metodo "body" en el "req" que tendre los datos del formulario
-app.use(express.urlencoded({ extended: false }));
 
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ limit: '2mb'}));
+
 //rutas
 app.use('/', rutas);
 //Archivos estaticos------------------------------------------
@@ -38,6 +37,7 @@ app.use("/modelsML", express.static(path.join(__dirname + "/modelsML")));
 const server = app.listen(app.get('port'), () =>{
     console.log('Servidor en el puerto 3000');
 });
+
 //inicializamos los sockets--------------------------------------
 const io = SocketIO(server);
 //inicializamos una conexion-------------------------------------

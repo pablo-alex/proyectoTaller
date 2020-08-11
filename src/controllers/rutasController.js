@@ -57,7 +57,6 @@ funciones.deleteUser = async (req, res) => {
 }
 
 funciones.obtener = async (req, res) => {
-    //console.log(req.body);
     const lista = await personas.findAll();
     var transformado = [];
 
@@ -65,7 +64,7 @@ funciones.obtener = async (req, res) => {
         transformado.push({
             id: lista[i].id,
             name: lista[i].name,
-            image: lista[i].image.toString()
+            image: lista[i].image.toString() //Json to 64base
         });
     }
     res.json(transformado);
