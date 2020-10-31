@@ -3,8 +3,7 @@ const path = require('path');
 const morgan = require('morgan');
 const app = express();
 const fs = require('fs-extra');
-const SocketIO = require('socket.io');
-const moment = require('moment');
+const moment = require('moment-timezone');
 //Importando rutas
 const rutas = require('./routes/rutas');
 const { type } = require('os');
@@ -36,13 +35,6 @@ app.use("/modelsML", express.static(path.join(__dirname + "/modelsML")));
 //Iniciando el servidor----------------------------------------
 const server = app.listen(app.get('port'), () =>{
     console.log('Servidor en el puerto 3000');
-});
-
-//inicializamos los sockets--------------------------------------
-const io = SocketIO(server);
-//inicializamos una conexion-------------------------------------
-io.on('connection', (socket)=>{
-    console.log('Hay una nueva Conexion! ' + socket.id);
 });
 
 

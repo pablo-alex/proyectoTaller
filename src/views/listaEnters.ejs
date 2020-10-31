@@ -54,8 +54,8 @@
                             <% a = a +1; %>
                             <% } %>
 
-                            <td> <%= moment(enters[i].myDate).format('LL'); %> </td>
-                            <td> <%= moment(enters[i].myDate).format('LTS'); %> </td>
+                            <td> <%= moment(enters[i].myDate).tz("America/New_York").format('LL'); %> </td>
+                            <td> <%= moment(enters[i].myDate).tz("America/New_York").format('LTS'); %> </td>
 
                         </tr>
                     <% } %>
