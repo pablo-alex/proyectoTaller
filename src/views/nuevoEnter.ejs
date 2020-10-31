@@ -138,7 +138,7 @@ take.addEventListener("click", async()=>{
         alert('Por favor intente con otra foto!!');
     }else{
         console.log('Se detecto un rostro en la imagen!');
-        const maxDescriptorDistance = 0.6;
+        const maxDescriptorDistance = 0.5;
         const faceMatcher = await new faceapi.FaceMatcher(labelfulldes, maxDescriptorDistance);
 
         const result =  await faceMatcher.findBestMatch(fullFaceDescription.descriptor);
